@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    environment{
+        AWS_ACCESS_KEY_ID = credentials("ACCESS_KEY-ID")
+        AWS_SECRET_ACCESS_KEY = credentials("SECRET_ACCESS_KEY")
+    }
+
+    stages{
+
+        stage("Initiating Terraform"){
+            steps{
+                script{
+                    dir("Terraform"){
+                        sh "terraform init"
+                    }
+                    echo "Terraform initialied successfully"
+                }
+            }
+        }
+
+        stage("Validating Terraform"){
+            steps{
+                script{
+                    dir("Terraform"){
+                        sh "terraform validate"
+                    }
+                    echo "Terraform validated"
+                }
+            }
+        }
+
+        stage("Previewing the Infrastructure"){
+            steps{
+                script{
+                    dir("Terraform"){
+                        sh "terraform plan"
+                    }
+                    input(message:"Approve?", ok: "proceed")
+                }
+            }
+        }
+
+        stage("Creating or Destroying the Infrastructure"){
+            steps{
+                script{
+                    dir("Terraform"){
+                        sh "terraform $action --auto-approve"
+                    }
+                    echo "Terraform applied successfully"
+                }
+            }
+        }
+    }
+}
