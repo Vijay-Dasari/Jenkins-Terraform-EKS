@@ -7,6 +7,14 @@ pipeline {
 
     stages{
 
+
+        stage('Checkout SCM'){
+            steps{
+                script{
+                    checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Vijay-Dasari/Jenkins-Terraform-EKS.git']])
+                }
+            }
+
         stage("Initiating Terraform"){
             steps{
                 script{
